@@ -137,3 +137,10 @@ dmypy.json
 
 # Mic files to ignore
 database.db
+
+
+##########################
+# C Ignore files
+
+*.dSYM/
+week-01-c/00-hello-world
