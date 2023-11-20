@@ -6,13 +6,14 @@ int main(void)
     int starting_llamas = 0;
     int ending_llamas = 0;
     int years = 0;
+    int population = 0;
 
     // Ask for the starting number of llamas in the population:
     do
     {
         starting_llamas = get_int("Enter the number of staring llamas: ");
     } 
-    while (starting_llamas == 0);
+    while (starting_llamas < 9);
 
     // Ask for the number of llamas needed in the population:
     do
@@ -22,14 +23,16 @@ int main(void)
     while (ending_llamas < starting_llamas);
 
     // Work out how many years are required to achieve the population required:
-    while (starting_llamas < ending_llamas)
+    population = starting_llamas;
+    
+    while (ending_llamas > population)
     {
-        starting_llamas += starting_llamas / 3;
-        starting_llamas += starting_llamas / 4;
+        population = population + (population / 3) - (population / 4);
         years++;
     }
 
     // Print the result:
-    printf("Total years to population is %i\n", years);
+    printf("Years: %i", years);
     
+    return 0;
 }
