@@ -10,33 +10,48 @@ int compute_score(string word);
 
 int main(void)
 {
-    // Get input words from both players
+    // Get input words from both players:
     string word1 = get_string("Player 1: ");
     string word2 = get_string("Player 2: ");
 
-    // Score both words
+    // Score both words:
     int score1 = compute_score(word1);
     int score2 = compute_score(word2);
 
-    // TODO: Print the winner
+    // Print the result:
     if (score1 > score2)
     {
-        printf("Player 1 wins!");
+        printf("Player 1 wins!\n");
     } 
     else if (score2 > score1)
     {
-        printf("Player 2 wins!");
+        printf("Player 2 wins\n");
     }
     else
     {
-        printf("Tie!");
-    }
-
-    
-    
+        printf("Tie!\n");
+    }   
 }
 
 int compute_score(string word)
 {
-    // TODO: Compute and return score for string
+    // Define variables for the score and the length of the string:
+    int score = 0;
+    int length = strlen(word);
+
+    // Cycle through the chars in the string:
+    for (int i = 0; i < length; i++)
+    {
+        if (islower(word[i]))
+        {
+            // Get points from POINTS array for lowercase chars:
+            score += POINTS[word[i] - 'a'];
+        }
+        else if (isupper(word[i]))
+        {
+            // Get points from POINTS array for uppercase chars:
+            score += POINTS[word[i] - 'A'];
+        }
+    }
+    return score;
 }
