@@ -28,4 +28,4 @@ int main(void)
 }
 ```
 
-The problem with this method is speed. If `n` is towards the begining, it can be a quick algorithm but if it's not, it can be slow depending upon the size of the array.
+The problem with this method is speed. If `n` is towards the beginning, it can be a quick algorithm but if it's not, it can be slow depending upon the size of the array.
