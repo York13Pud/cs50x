@@ -72,3 +72,7 @@ int main(void)
 ```
 
 A struct in C works in a similar way to that of a struct in Swift.
+
+## Iterative vs. Recursive
+
+Short and simple, a for loop is iterative and a function that calls itself is recursive.
