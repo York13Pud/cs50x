@@ -144,3 +144,4 @@ database.db
 
 *.dSYM/
 week-01-c/00-hello-world
+week-07-sql/movies/movies.db
