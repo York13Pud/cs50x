@@ -1,0 +1,8 @@
+SELECT 
+    AVG(songs.energy) AS "average energy"
+FROM 
+    songs
+INNER JOIN
+    artists ON songs.artist_id = artists.id
+WHERE 
+    artists.name LIKE "Drake";
