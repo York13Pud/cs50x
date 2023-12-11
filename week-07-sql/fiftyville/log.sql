@@ -64,3 +64,81 @@ WHERE
 -- but it does narrow the list down.ABORT
 
 -- Next, look at the bakery security logs:
+SELECT 
+    people.name, bakery_security_logs.license_plate, year, month, day, hour, minute, activity
+FROM 
+    bakery_security_logs
+INNER JOIN
+    people ON people.license_plate = bakery_security_logs.license_plate
+WHERE 
+    year = 2021 AND 
+    month = 7 AND 
+    day = 28 AND
+    hour = 10 AND
+    minute >= 15 AND minute <= 25 AND
+    activity = "exit";
+
+-- Results:
+-- Name       Car_reg
+-- Vanessa	- 5P2BI95
+-- Bruce	- 94KL13X
+-- Barry	- 6P58WS2
+-- Luca	    - 4328GD8
+-- Sofia	- G412CB7
+-- Iman	    - L93JTIZ
+-- Diana	- 322W7JE
+-- Kelsey	- 0NTHK55
+
+-- Common names between the bakery and ATM are: Bruce, Luca, Iman, Diana
+
+-- Next, let's look at the phone logs as one person mentioned a short call:
+SELECT 
+    phone_calls.caller, 
+    cp.name, 
+    phone_calls.receiver, 
+    rp.name, 
+    phone_calls.year, 
+    phone_calls.month, 
+    phone_calls.day, 
+    phone_calls.duration
+FROM 
+    phone_calls
+INNER JOIN
+    people AS cp ON cp.phone_number = phone_calls.caller
+INNER JOIN
+    people AS rp ON rp.phone_number = phone_calls.receiver
+WHERE 
+    phone_calls.year = 2021 AND 
+    phone_calls.month = 7 AND 
+    phone_calls.day = 28 AND
+    phone_calls.duration <= 60;
+
+-- Phone Call Results:
+-- caller	        name	receiver	    name	
+-- (130) 555-0289	Sofia	(996) 555-8899	Jack    	2021	7	28	51
+-- (499) 555-9472	Kelsey	(892) 555-8872	Larry	    2021	7	28	36
+-- (367) 555-5533	Bruce	(375) 555-8161	Robin	    2021	7	28	45
+-- (609) 555-5876	Kathryn	(389) 555-5198	Luca	    2021	7	28	60
+-- (499) 555-9472	Kelsey	(717) 555-1342	Melissa	    2021	7	28	50
+-- (286) 555-6063	Taylor	(676) 555-6554	James	    2021	7	28	43
+-- (770) 555-1861	Diana	(725) 555-3243	Philip	    2021	7	28	49
+-- (031) 555-6622	Carina	(910) 555-3251	Jacqueline	2021	7	28	38
+-- (826) 555-1652	Kenny	(066) 555-9701	Doris	    2021	7	28	55
+-- (338) 555-6650	Benista	(704) 555-2131	Anna	    2021	7	28	54
+
+-- Common names: Bruce, Diana
+
+-- Next, look at the flights as one witness mentioned the caller wanted the earliest flight
+-- out the next day (29/07/2021):
+
+
+-- Results:
+-- id	origin_name	                city	    dest_name	                        city	        year	month	day	hour	minute
+-- 36	Fiftyville Regional Airport	Fiftyville	LaGuardia Airport	                New York City	2021	7	    29	8	    20
+-- 43	Fiftyville Regional Airport	Fiftyville	O'Hare International Airport	    Chicago	        2021	7	    29	9	    30
+-- 23	Fiftyville Regional Airport	Fiftyville	San Francisco International Airport	San Francisco	2021	7	    29	12	    15
+-- 53	Fiftyville Regional Airport	Fiftyville	Tokyo International Airport	        Tokyo           2021	7	    29	15	    20
+-- 18	Fiftyville Regional Airport	Fiftyville	Logan International Airport	        Boston          2021	7	    29	16	    0
+
+-- id 36 is the earliest flight out of Fiftyville the following day. Let's have a look at the passengers for that flight:
+
