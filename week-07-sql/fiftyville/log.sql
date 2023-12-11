@@ -1,4 +1,5 @@
 -- Keep a log of any SQL queries you execute as you solve the mystery.
+
 -- List the crime scene reports for the 28/7/2021:
 SELECT id, year, month, day, street, description
 FROM crime_scene_reports
@@ -126,7 +127,7 @@ WHERE
 -- (826) 555-1652	Kenny	(066) 555-9701	Doris	    2021	7	28	55
 -- (338) 555-6650	Benista	(704) 555-2131	Anna	    2021	7	28	54
 
--- Common names: Bruce, Diana
+-- Common names: Bruce, Diana, Luca
 
 -- Next, look at the flights as one witness mentioned the caller wanted the earliest flight
 -- out the next day (29/07/2021):
@@ -140,5 +141,33 @@ WHERE
 -- 53	Fiftyville Regional Airport	Fiftyville	Tokyo International Airport	        Tokyo           2021	7	    29	15	    20
 -- 18	Fiftyville Regional Airport	Fiftyville	Logan International Airport	        Boston          2021	7	    29	16	    0
 
--- id 36 is the earliest flight out of Fiftyville the following day. Let's have a look at the passengers for that flight:
+-- id 36 is the earliest flight out of Fiftyville the following day. 
 
+-- Next, Let's have a look at the passengers for that flight:
+SELECT 
+    flight_id, 
+    passengers.passport_number, 
+    people.name,
+    seat
+FROM 
+    passengers
+INNER JOIN
+    people ON people.passport_number = passengers.passport_number
+WHERE 
+    flight_id = 36;
+
+-- Results: 
+-- flight_id	passport_number	name	seat
+-- 36	        7214083635	    Doris	2A
+-- 36	        1695452385	    Sofia	3B
+-- 36	        5773159633	    Bruce	4A
+-- 36	        1540955065	    Edward	5C
+-- 36	        8294398571	    Kelsey	6C
+-- 36	        1988161715	    Taylor	6D
+-- 36	        9878712108	    Kenny	7A
+-- 36	        8496433585	    Luca	7B
+
+-- Conclusion:
+-- After going through the tables, the only common name that came up was Bruce.
+-- Bruce made a call to Robin so my conclusion is Bruce is the thief, who escaped to New York City and Robin
+-- is the accomplice.
