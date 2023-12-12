@@ -1,18 +1,49 @@
 <!DOCTYPE html>
 
 <html lang="en">
+    
     <head>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
         <link href="styles.css" rel="stylesheet">
+        
         <title>Trivia!</title>
+        
         <script>
-            // Check question 1:
-            
-
-            // Check question 2:
-
+            // Run this when the DOM is done:
+            document.addEventListener("DOMContentLoaded", function() {
+               
+                // Check question 1:
+                // If the correct answer is clicked:
+                let correct = document.querySelector('.correct');
+                correct.addEventListener('click', function(){
+                    correct.style.backgroundColor = 'green';
+                    document.querySelector('#answer1').innerHTML = 'Correct';
+                });
+                
+                // If an incorrect answer is clicked:
+                let incorrects = document.querySelectorAll('.incorrect');
+                for (let i = 0; i < incorrects.length; i++) {
+                    incorrects[i].addEventListener('click', function() {
+                        incorrects[i].style.backgroundColor = 'red';
+                        document.querySelector('#answer1').innerHTML = 'Incorrect';
+                    });
+                }
+                // Check question 2:
+                document.querySelector('#verify').addEventListener('click', function() {
+                    let input = document.querySelector('input');
+                    
+                    if (input.value === '10') {
+                        input.style.backgroundColor = 'green'
+                        document.querySelector('#answer2').innerHTML = 'Correct!';
+                    } else {
+                        document.querySelector('#answer2').innerHTML = 'Incorrect';
+                    }
+                });
+        });
         </script>
+
     </head>
+    
     <body>
         <div class="header">
             <h1>Trivia!</h1>
@@ -25,10 +56,10 @@
                 
                 <h3>Which of the following goes before moon, bayou, and blood?</h3>
                 
-                <button name="blue" class="correct">Blue</button>
-                <button name="red" class="incorrect">Red</button>
-                <button name="green" class="incorrect">Green</button>
-                <button name="yellow" class="incorrect">Yellow</button>
+                <button class="correct">Blue</button>
+                <button class="incorrect">Red</button>
+                <button class="incorrect">Green</button>
+                <button class="incorrect">Yellow</button>
                 
                 <p id="answer1"></p>
             </div>
@@ -36,12 +67,15 @@
             <div class="section">
                 <h2>Part 2: Free Response</h2>
                 <hr>
+                
                 <h3>How many legs does a crab have?10</h3>
-                <form action="">
-                    <input type="text">
-                    <button type="submit">Check Answer</button>
-                </form>
+                
+                <input type="text">
+                <button id="verify">Check Answer</button>
+                
+                <p id="answer2"></p>
             </div>
         </div>
     </body>
+    
 </html>
