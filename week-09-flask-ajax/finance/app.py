@@ -45,13 +45,6 @@ def buy():
     return apology("TODO BUY")
 
 
-@app.route("/history")
-@login_required
-def history():
-    """Show history of transactions"""
-    return apology("TODO HISTORY")
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
@@ -145,3 +138,15 @@ def quote():
         return render_template("quote.html", results = results)
         
     return render_template("quote.html", results = None)
+
+
+@app.route("/history")
+@login_required
+def history():
+    """Show history of transactions"""
+    # Create a table
+    # -- id, symbol, name, shares, price, user_id, timestamp
+    
+    # Get shares from table:
+    # -- Looks like the shares on the history page are grouped by symbol
+    return apology("TODO HISTORY")
