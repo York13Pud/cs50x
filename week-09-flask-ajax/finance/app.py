@@ -35,7 +35,7 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+    return apology("TODO BASE")
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -109,10 +109,26 @@ def quote():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
+     
+    if request.method == "POST":   
+        username = request.form.get("username")
+        password = request.form.get("password")
+        confirmation = request.form.get("confirmation")
+        
+        if not username or not password or not confirmation:
+            return apology("Username or password missing.")
+
+        if not password == confirmation:
+            return apology("Passwords do not match")
+            
+        password = generate_password_hash(password = password)
+        
+        db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", username, password)
+        
+        return redirect("/login")
     
-    
-    
-    return apology("TODO")
+    return render_template("register.html")
+        
 
 
 @app.route("/sell", methods=["GET", "POST"])
