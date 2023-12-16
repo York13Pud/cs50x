@@ -146,7 +146,9 @@ def history():
     """Show history of transactions"""
     # Create a table
     # -- id, symbol, name, shares, price, user_id, timestamp
-    
+    user_id = session["user_id"]
     # Get shares from table:
     # -- Looks like the shares on the history page are grouped by symbol
+    transactions = db.execute("SELECT * FROM transactions WHERE user_id=?", user_id)
+    print(transactions)
     return apology("TODO HISTORY")
