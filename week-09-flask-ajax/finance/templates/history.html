@@ -12,6 +12,7 @@
             <tr>
                 <th class="text-start">Symbol</th>
                 <th class="text-end">Shares</th>
+                <th class="text-end">Transaction Type</th>
                 <th class="text-end">Price</th>
                 <th class="text-end">Transacted</th>
             </tr>
@@ -20,9 +21,10 @@
         <tbody>
             {% for row in ledger %}
                 <tr>
-                    <td class="text-start">{{ row.symbol }}</td>
+                    <td class="text-start">{{ row.symbol | upper}}</td>
                     <td class="text-end">{{ row.shares }}</td>
-                    <td class="text-end">${{ row.price }}</td>
+                    <td class="text-end">{{ row.type | capitalize }}</td>
+                    <td class="text-end">{{ row.price | usd }}</td>
                     <td class="text-end">{{ row.timestamp }}</td>
                 </tr>
             {% endfor %}
