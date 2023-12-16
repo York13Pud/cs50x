@@ -18,13 +18,14 @@
         </thead>
         
         <tbody>
-            <tr>
-                <td class="text-start"></td>
-                <td class="text-end"></td>
-                <td class="text-end"></td>
-                <td class="text-end"></td>
-            </tr>
-            
+            {% for row in ledger %}
+                <tr>
+                    <td class="text-start">{{ row.symbol }}</td>
+                    <td class="text-end">{{ row.shares }}</td>
+                    <td class="text-end">${{ row.price }}</td>
+                    <td class="text-end">{{ row.timestamp }}</td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 
