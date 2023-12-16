@@ -7,16 +7,20 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import apology, login_required, lookup, usd
 
+
 # Configure application
 app = Flask(__name__)
 
+
 # Custom filter
 app.jinja_env.filters["usd"] = usd
+
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///finance.db")
@@ -35,14 +39,8 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
+    # -- TODO
     return render_template("index.html")
-
-
-@app.route("/buy", methods=["GET", "POST"])
-@login_required
-def buy():
-    """Buy shares of stock"""
-    return apology("TODO BUY")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -149,3 +147,42 @@ def history():
     transactions = db.execute("SELECT * FROM transactions WHERE user_id=? ORDER BY timestamp ASC", user_id)
 
     return render_template("history.html", ledger=transactions)
+
+
+@app.route("/buy", methods=["GET", "POST"])
+@login_required
+def buy():
+    """Buy shares of stock"""
+    
+    if request.method == "POST":
+        user_id = session["user_id"]
+        
+        symbol = request.form.get("symbol")
+        shares = request.form.get('shares')
+        
+        results = lookup(symbol = symbol)
+        stock_price = results['price']
+        
+        if results == None:
+            return apology("INVALID SYMBOL")
+        
+        # -- Get users cash and check that they can afford the transaction:
+        user_cash = db.execute("SELECT cash FROM users WHERE id=?", user_id)
+        user_cash = float(user_cash[0]["cash"])
+        print(user_cash)
+        print(type(user_cash))
+        print(type(stock_price))
+        
+        if user_cash - (stock_price * float(shares)) <= 0:
+            return apology("NOT ENOUGH FUNDS")
+                
+        # -- Add code to insert into DB:
+        db.execute(f"INSERT INTO transactions (symbol, type, name, shares, price, user_id) \
+                     VALUES ('{results['symbol']}', 'buy', '{results['name']}', {shares}, {stock_price}, {user_id});")
+        
+        user_cash = user_cash - (stock_price * float(shares))
+        db.execute("UPDATE users SET cash=? WHERE id=?", user_cash, user_id)
+        
+        return redirect("/")
+        
+    return render_template("buy.html", results = None)
