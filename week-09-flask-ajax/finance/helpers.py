@@ -71,7 +71,7 @@ def lookup(symbol):
         price = round(float(quotes[0]["Adj Close"]), 2)
         return {
             "name": symbol,
-            "price": usd(price),
+            "price": price,
             "symbol": symbol
         }
     except (requests.RequestException, ValueError, KeyError, IndexError):
