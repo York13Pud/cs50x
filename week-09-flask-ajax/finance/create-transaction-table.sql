@@ -1,11 +1,14 @@
--- SQLite
--- id, symbol, name, shares, price, user_id, timestamp
+-- Create transactions table:
 CREATE TABLE transactions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-    symbol TEXT NOT NULL,
-    name TEXT NOT NULL,
-    shares INT NOT NULL,
-    price NUMERIC NOT NULL,
-    user_id REFERENCES users(id),
-    timestamp DATE DEFAULT CURRENT_TIMESTAMP
-)
+    id          INTEGER     NOT NULL PRIMARY KEY AUTOINCREMENT, 
+    symbol      TEXT        NOT NULL,
+    type        TEXT        NOT NULL,
+    name        TEXT        NOT NULL,
+    shares      INTEGER     NOT NULL,
+    price       NUMERIC     NOT NULL,
+    user_id     INTEGER     NOT NULL REFERENCES users(id),
+    timestamp   DATE        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT type_is_buy_sell 
+        CHECK (type='buy' OR type='sell')
+);
