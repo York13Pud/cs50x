@@ -11,7 +11,7 @@
             <select class="form-select mx-auto w-auto" name="symbol">
                 <option disabled="" selected="">Symbol</option>
                 {% for ticker in tickers %}
-                    <option value="{{ticker.symbol}}">{{ticker.symbol}}</option>
+                    <option value="{{ticker.symbol}}">{{ticker.symbol}} ({{ticker.avail_shares}} shares owned)</option>
                 {% endfor %}              
             </select>
         </div>
