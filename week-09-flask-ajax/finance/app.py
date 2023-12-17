@@ -48,8 +48,25 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    # -- TODO
-    return render_template("index.html")
+    user_id = session["user_id"]
+    user_cash = db.execute("SELECT cash FROM users WHERE id=?", user_id)
+    user_cash = float("{:.2f}".format(user_cash[0]["cash"]))
+
+    tickers = get_owned_shares(user = user_id)
+    
+    for i in tickers:
+        ticker_current_price = lookup(symbol = i["symbol"])
+        i["price"] = ticker_current_price["price"]
+        i["total_price"] = ticker_current_price["price"] * i["avail_shares"]
+        
+    total = user_cash
+    for ticker_total in tickers:
+        total += float(ticker_total["total_price"])
+    
+    return render_template("index.html", 
+                           tickers = tickers, 
+                           cash = user_cash,
+                           total = total)
 
 
 @app.route("/login", methods=["GET", "POST"])
