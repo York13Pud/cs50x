@@ -64,7 +64,7 @@ def lookup(symbol):
     try:
         response = requests.get(url, cookies={"session": str(uuid.uuid4())}, headers={"User-Agent": "python-requests", "Accept": "*/*"})
         response.raise_for_status()
-        print(response.content)
+        # print(response.content)
         # CSV header: Date,Open,High,Low,Close,Adj Close,Volume
         quotes = list(csv.DictReader(response.content.decode("utf-8").splitlines()))
         quotes.reverse()
