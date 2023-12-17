@@ -25,6 +25,15 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///finance.db")
 
+def get_owned_shares(user: int):
+    tickers_avail = db.execute("SELECT symbol, type, name, user_id, SUM(shares) AS avail_shares \
+                        FROM transactions \
+                        WHERE user_id=? AND symbol !='funds_in' AND symbol !='funds_out' \
+                        GROUP BY symbol \
+                        HAVING SUM(shares) > 0", user)
+    
+    return tickers_avail
+    
 
 @app.after_request
 def after_request(response):
@@ -114,13 +123,6 @@ def register():
     return render_template("register.html")
         
 
-@app.route("/sell", methods=["GET", "POST"])
-@login_required
-def sell():
-    """Sell shares of stock"""
-    return apology("TODO SELL")
-
-
 @app.route("/quote", methods=["GET", "POST"])
 @login_required
 def quote():
@@ -169,9 +171,6 @@ def buy():
         # -- Get users cash and check that they can afford the transaction:
         user_cash = db.execute("SELECT cash FROM users WHERE id=?", user_id)
         user_cash = float(user_cash[0]["cash"])
-        print(user_cash)
-        print(type(user_cash))
-        print(type(stock_price))
         
         if user_cash - (stock_price * float(shares)) <= 0:
             return apology("NOT ENOUGH FUNDS")
@@ -186,3 +185,55 @@ def buy():
         return redirect("/")
         
     return render_template("buy.html", results = None)
+
+
+@app.route("/sell", methods=["GET", "POST"])
+@login_required
+def sell():
+    """Sell shares of stock"""
+    user_id = session["user_id"]
+    
+    tickers = get_owned_shares(user = user_id)
+    
+    if request.method == "POST":        
+        symbol = request.form.get("symbol")
+        
+        results = lookup(symbol = symbol)
+        
+        if results == None:
+            return apology("INVALID SYMBOL")
+        
+        for i in tickers:
+            if i["symbol"] == symbol:
+                current_shares = int(i["avail_shares"])
+            else:
+                pass
+        
+        stock_price = results['price']
+        shares = int(request.form.get('shares'))
+        
+        if current_shares - shares < 0:
+            return apology("NOT ENOUGH SHARES TO SELL")
+        
+        # -- Get users cash and check that they can afford the transaction:
+        user_cash = db.execute("SELECT cash FROM users WHERE id=?", user_id)
+        user_cash = float(user_cash[0]["cash"])
+        user_cash = user_cash + (stock_price * float(shares))
+        
+        shares = int(f"-{shares}")
+        
+        # -- Add code to insert into DB:
+        db.execute(f"INSERT INTO transactions (symbol, type, name, shares, price, user_id) \
+                     VALUES ('{results['symbol']}', 'sell', '{results['name']}', {shares}, {stock_price}, {user_id});")
+        
+        db.execute("UPDATE users SET cash=? WHERE id=?", user_cash, user_id)
+        
+        return redirect("/") 
+    
+    return render_template("sell.html", tickers = tickers)
+
+
+@app.route("/funds-in", methods=["GET", "POST"])
+@login_required
+def add_funds():
+    pass
