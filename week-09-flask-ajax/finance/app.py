@@ -35,6 +35,12 @@ def get_owned_shares(user: int):
     return tickers_avail
     
 
+def get_user(user: int):
+    user_details = db.execute("SELECT username, cash FROM users WHERE id=?", user)
+    
+    return user_details
+
+    
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -199,6 +205,8 @@ def buy():
         user_cash = user_cash - (stock_price * float(shares))
         db.execute("UPDATE users SET cash=? WHERE id=?", user_cash, user_id)
         
+        flash(f"{shares} Share(s) Of {symbol.upper()} Purchased")
+        
         return redirect("/")
         
     return render_template("buy.html", results = None)
@@ -229,6 +237,8 @@ def sell():
         stock_price = results['price']
         shares = int(request.form.get('shares'))
         
+        flash(f"{shares} Share(s) Of {symbol.upper()} Sold")
+        
         if current_shares - shares < 0:
             return apology("NOT ENOUGH SHARES TO SELL")
         
@@ -250,7 +260,28 @@ def sell():
     return render_template("sell.html", tickers = tickers)
 
 
-@app.route("/funds-in", methods=["GET", "POST"])
+@app.route("/addfunds", methods=["GET", "POST"])
 @login_required
 def add_funds():
-    pass
+    if request.method == "POST":
+        cash_to_add = float(request.form.get("addfunds"))
+        
+        if cash_to_add == None or cash_to_add <=0:
+            return apology("NO VALID CASH VALUE PROVIDED")
+        
+        user_id = session["user_id"]
+        user = get_user(user = user_id)
+        current_balance = float(user[0]["cash"])
+                
+        new_balance = current_balance + cash_to_add
+        
+        # -- Add to ledger:
+        db.execute("INSERT INTO transactions (symbol, type, name, shares, price, user_id) \
+                     VALUES ('funds_in', 'funds_in', 'funds_in', 0, ?, ?)", cash_to_add, user_id)
+        
+        # -- Update users cash:
+        db.execute("UPDATE users SET cash=? WHERE id=?", new_balance, user_id)
+        flash(f"{usd(cash_to_add)} Funds Added")
+        return redirect("/")
+    
+    return render_template("/addfunds.html")
