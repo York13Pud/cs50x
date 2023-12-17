@@ -10,5 +10,5 @@ CREATE TABLE transactions (
     timestamp   DATE        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
     CONSTRAINT type_is_buy_sell 
-        CHECK (type='buy' OR type='sell')
+        CHECK (type='buy' OR type='sell' OR type='funds_in' OR type='funds_out')
 );
