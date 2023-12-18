@@ -130,6 +130,7 @@ def register():
         username = request.form.get("username")
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
+        starting_balance = float(10000)
         
         if not username or not password or not confirmation:
             return apology("Username or password missing.")
@@ -139,7 +140,10 @@ def register():
             
         password = generate_password_hash(password = password)
         
-        db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", username, password)
+        new_user = db.execute("INSERT INTO users (username, hash, cash) VALUES (?, ?, ?)", username, password, starting_balance)
+        
+        db.execute("INSERT INTO transactions (symbol, type, name, shares, price, user_id) \
+                     VALUES ('funds_in', 'funds_in', 'funds_in', 0, ?, ?)", starting_balance, int(new_user))
         
         return redirect("/login")
     
@@ -186,12 +190,12 @@ def buy():
         shares = request.form.get('shares')
         
         results = lookup(symbol = symbol)
-        stock_price = results['price']
         
         if results == None:
             return apology("INVALID SYMBOL")
         
         # -- Get users cash and check that they can afford the transaction:
+        stock_price = results['price']
         user_cash = db.execute("SELECT cash FROM users WHERE id=?", user_id)
         user_cash = float(user_cash[0]["cash"])
         
