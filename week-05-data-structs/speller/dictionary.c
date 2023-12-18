@@ -1,130 +1,109 @@
 // Implements a dictionary's functionality
-
-#include <stdbool.h>
-#include <stdlib.h>
 #include <ctype.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include <stdio.h>
 
 #include "dictionary.h"
 
-// Represents a node in a hash table
+unsigned int countSize = 0;
+
+// Build a struct for a node in a hash table:
 typedef struct node
 {
-    char word[LENGTH];
+    char word[LENGTH + 1];
     struct node *next;
-}
-node;
+} node;
 
-// Number of buckets in hash table
-const unsigned int N = 26;
+// The number of buckets in a given hash table:
+const unsigned int N = 500;
 
-// Hash table
+// Build a hHash table:
 node *table[N];
-int totalWords = 0;
 
-// Returns true if word is in dictionary else false
+// Returns true if the word is in the dictionary, otherwise it will be false:
 bool check(const char *word)
 {
-    node *cursor = table[hash(word)];
+    int index = hash(word);
 
-    //compare words case insensitive
-    if (strcasecmp(cursor->word, word) == 0)
-    {
-        return true;
-    }
+    node *cursor = table[index];
 
-    //keep traversing linked list until it finds the word or it finishes
-    while (cursor->next != NULL)
+    while (cursor != NULL)
     {
-        cursor = cursor->next;
         if (strcasecmp(cursor->word, word) == 0)
         {
             return true;
         }
+        cursor = cursor->next;
     }
-
     return false;
 }
 
-// Hashes word to a number
-// simply used one bucket for every letter, a = 0, b = 1 ... z = 25
+// Hashes the word to a number:
 unsigned int hash(const char *word)
 {
-    int n = (int) tolower(word[0]) - 97;
-    return n;
+    unsigned int value = 0;
+    unsigned int key_len = strlen(word);
+    for (int i = 0; i < key_len; i++)
+    {
+        value = value + 37 * tolower(word[i]);
+    }
+    value = value % N;
+    return value;
 }
 
-// Loads dictionary into memory, returning true if successful else false
+// Loads the dictionary into RAM:
 bool load(const char *dictionary)
 {
-    // opens the dictionary and initializes temporary space to hold the words
-    FILE *file = fopen(dictionary, "r");
-    char *dictWord = malloc(LENGTH);
-    if (dictWord == NULL)
+    FILE *open_dictionary = fopen(dictionary, "r");
+    if (open_dictionary == NULL)
     {
         return false;
     }
-
-    // reads file until the end
-    while (fscanf(file, "%s", dictWord) != EOF)
+    char Dword[LENGTH + 1];
+    while (fscanf(open_dictionary, "%s", Dword) != EOF)
     {
-        // allocates memory for a node in which the word will be inserted
-        node *n = malloc(sizeof(node));
-        if (n == NULL)
+        node *newNode = malloc(sizeof(node));
+        if (newNode == NULL)
         {
             return false;
         }
+        strcpy(newNode->word, Dword);
+        newNode->next = NULL;
+        int index = hash(Dword);
 
-        // copies the word in the chunk of memory allocated and then updates the words count
-        strcpy(n->word, dictWord);
-        totalWords++;
-
-        // set next to point at beginning of list
-        n->next = table[hash(dictWord)];
-
-        // set array to point at n which becomes new beginning of the list
-        table[hash(dictWord)] = n;
+        if (table[index] == NULL)
+        {
+            table[index] = newNode;
+        }
+        else
+        {
+            newNode->next = table[index];
+            table[index] = newNode;
+        }
+        countSize++;
     }
-
-    fclose(file);
-    free(dictWord);
+    fclose(open_dictionary);
     return true;
 }
 
-// Returns number of words in dictionary if loaded else 0 if not yet loaded
+// Returns the total number of words in dictionary or zero if none:
 unsigned int size(void)
 {
-    return totalWords;
+    return countSize;
 }
 
-// Unloads dictionary from memory, returning true if successful else false
+// Clear the table out of RAM:
 bool unload(void)
 {
-    // creates two pointers to traverse the linked list and cancel its element without losing its address
-    node *tmp;
-    node *cursor;
-
-    // repeats for every index in the table
     for (int i = 0; i < N; i++)
-    {
-        if (table[i] == NULL)
+        while (table[i] != NULL)
         {
-            continue;
+            node *temp = table[i]->next;
+            free(table[i]);
+            table[i] = temp;
         }
-
-        cursor = table[i];
-        tmp = cursor;
-
-        // until the end of the list keeps freeing the memory allocated in load
-        while (cursor->next != NULL)
-        {
-            cursor = cursor->next;
-            free(tmp);
-            tmp = cursor;
-        }
-        free(cursor);
-    }
     return true;
 }
