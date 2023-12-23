@@ -28,9 +28,6 @@ sql_all_article_views = "SELECT stats_articleviews.article_views_article_id_fk_i
                         ORDER BY stats_articleviews.date_added DESC"
 
 
-# sql_all_articles = "SELECT title, url, date_added FROM stats_articles WHERE is_published = 1"
-
-
 sql_max_article_likes = "SELECT \
 		                DISTINCT stats_articlelikes.article_likes_article_id_fk_id, \
 		                stats_articlelikes.count, \
